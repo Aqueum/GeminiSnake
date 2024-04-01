@@ -57,6 +57,7 @@ def game_loop():
     y1_change = 0
     snake_list = []
     snake_length = 1
+    snake_list.append((x1, y1)) 
 
     foodx = round(random.randrange(0, screen_width - snake_block) / 10.0) * 10.0
     foody = round(random.randrange(0, screen_height - snake_block) / 10.0) * 10.0
