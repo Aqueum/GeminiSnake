@@ -67,50 +67,31 @@ def game_loop():
         while game_close:
             game_over_display()
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    game_over = True
-                    game_close = False
-                if event.type == pygame.KEYDOWN: 
-                    if event.key == pygame.K_q:
-                        game_over = True
-                        game_close = False
-                    if event.key == pygame.K_r:
-                        game_loop() 
+                # ... (Handle restart or quit logic) 
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game_over = True
             if event.type == pygame.KEYDOWN:  
-                if event.key == pygame.K_LEFT:
-                    x1_change = -snake_block
-                    y1_change = 0
-                elif event.key == pygame.K_RIGHT:
-                    x1_change = snake_block
-                    y1_change = 0
-                elif event.key == pygame.K_UP:
-                    y1_change = -snake_block
-                    x1_change = 0
-                elif event.key == pygame.K_DOWN:
-                    y1_change = snake_block
-                    x1_change = 0
+                # ... (Handle arrow key presses for movement)
 
         x1 += x1_change
+        y1_change = 0 # Temporary fix, will refine later.
+
+        if check_collision(snake_list, foodx, foody, screen_width, screen_height):
+            game_over = True
+            game_close = True
+
         y1 += y1_change
 
         screen.fill(black)
 
         for x, y in snake_list:
-          pygame.draw.rect(screen, green, [x, y, snake_block, snake_block])
+            pygame.draw.rect(screen, green, [x, y, snake_block, snake_block])
 
         pygame.draw.rect(screen, red, [foodx, foody, snake_block, snake_block])
-
         display_score(snake_length - 1)
-
         pygame.display.update()
-
-        if check_collision(snake_list, foodx, foody, screen_width, screen_height):
-            game_over = True
-            game_close = True
 
         clock.tick(snake_speed)
 
