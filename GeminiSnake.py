@@ -43,7 +43,12 @@ def check_collision(snake_list, foodx, foody, screen_width, screen_height):
     return False, False  # No collision, no food
 
 def generate_new_food_position(snake_list, screen_width, screen_height):
-    # ... (Existing function code)
+    while True:  
+        foodx = round(random.randrange(0, screen_width - snake_block) / 10.0) * 10.0
+        foody = round(random.randrange(0, screen_height - snake_block) / 10.0) * 10.0
+        if (foodx, foody) not in snake_list:  
+           break
+    return foodx, foody
 
 def game_over_display():  
   font_style = pygame.font.SysFont(None, 50)  # Larger font 
@@ -53,17 +58,47 @@ def game_over_display():
 
 # Main game loop
 def game_loop():
-    # ... (Initialization: x1, y1, x1_change, y1_change, snake_list, foodx, foody)
+    print("Starting game loop")
+    game_over = False
+    game_close = False
+
+    x1 = screen_width / 2
+    y1 = screen_height / 2
+    x1_change = 0
+    y1_change = 0
+    snake_list = []
+    snake_length = 1
+    snake_list.append((x1, y1)) 
+
+    foodx, foody = generate_new_food_position(snake_list, screen_width, screen_height)
 
     while True: # Game now runs indefinitely
         
         while game_close:  # Game over display loop
             game_over_display()
             for event in pygame.event.get():
-                # ... (Handle restart or quit logic)
+                if event.type == pygame.QUIT:
+                    game_over = True
+                    game_close = False  
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_q:
+                        game_over = True
+                        game_close = False
+                    if event.key == pygame.K_r:
+                        game_loop()  # Restart the game
 
         for event in pygame.event.get():
-            # ... (Handle movement controls)
+            if event.type == pygame.QUIT:
+                game_over = True
+            if event.type == pygame.KEYDOWN: 
+                if (event.key == pygame.K_LEFT and x1_change != snake_block) or \
+                   (event.key == pygame.K_RIGHT and x1_change != -snake_block): 
+                    x1_change = -snake_block if event.key == pygame.K_LEFT else snake_block
+                    y1_change = 0 
+                elif (event.key == pygame.K_UP and y1_change != snake_block) or \
+                     (event.key == pygame.K_DOWN and y1_change != -snake_block):
+                    y1_change = -snake_block if event.key == pygame.K_UP else snake_block 
+                    x1_change = 0 
 
         x1 += x1_change
         y1 += y1_change
