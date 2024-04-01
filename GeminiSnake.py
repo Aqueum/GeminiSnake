@@ -2,6 +2,7 @@ import pygame
 import random
 
 # Initialize Pygame
+print("Initializing Pygame")
 pygame.init()
 
 # Set screen dimensions
@@ -48,6 +49,7 @@ def game_over_display():
 
 # Main game loop
 def game_loop():
+    print("Starting game loop")
     game_over = False
     game_close = False
 
@@ -72,7 +74,7 @@ def game_loop():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game_over = True
-            if event.type == pygame.KEYDOWN:  
+            if event.type == pygame.KEYDOWN: 
                 # ... (Handle arrow key presses for movement)
 
         x1 += x1_change
