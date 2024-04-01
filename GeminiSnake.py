@@ -76,7 +76,20 @@ def game_loop():
                         print_scores()  
 
         for event in pygame.event.get():
-            # ... (Movement controls - remain the same)
+            if event.type == pygame.QUIT:
+                game_over = True
+            if event.type == pygame.KEYDOWN: 
+                # Updated comment to reflect added movement controls
+                if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT or \
+                   event.key == pygame.K_UP or event.key == pygame.K_DOWN: 
+                    if (event.key == pygame.K_LEFT and x1_change != snake_block) or \
+                       (event.key == pygame.K_RIGHT and x1_change != -snake_block): 
+                        x1_change = -snake_block if event.key == pygame.K_LEFT else snake_block
+                        y1_change = 0 
+                    elif (event.key == pygame.K_UP and y1_change != snake_block) or \
+                         (event.key == pygame.K_DOWN and y1_change != -snake_block):
+                        y1_change = -snake_block if event.key == pygame.K_UP else snake_block 
+                        x1_change = 0 
 
         x1 += x1_change
         y1 += y1_change
