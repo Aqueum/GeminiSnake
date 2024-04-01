@@ -33,8 +33,28 @@ def display_score(score):
     value = font_style.render("Score: " + str(score), True, white)
     screen.blit(value, [0, 0])
 
-# ... (Other functions: check_collision, generate_new_food_position - remain the same)
+# Function to generate new food position  
+def generate_new_food_position(snake_list, screen_width, screen_height):
+    while True:  
+        foodx = round(random.randrange(0, screen_width - snake_block) / 10.0) * 10.0
+        foody = round(random.randrange(0, screen_height - snake_block) / 10.0) * 10.0
+        if (foodx, foody) not in snake_list:  
+           break
+    return foodx, foody
 
+# Function to check for collisions
+def check_collision(snake_list, foodx, foody, screen_width, screen_height):
+    head = snake_list[-1]  
+    if head[0] >= screen_width or head[0] < 0 or head[1] >= screen_height or head[1] < 0:
+        return True, False  # Collision with wall, no food
+    for segment in snake_list[:-1]: 
+        if head == segment:
+            return True, False  # Collision with self, no food
+    if head[0] == foodx and head[1] == foody:
+        return False, True  # No Collision, food eaten
+    return False, False  # No collision, no food
+
+# Function to display game over message 
 def game_over_display(score):  
   font_style = pygame.font.SysFont(None, 50)  
   message = font_style.render("Game Over! Final Score: " + str(score), True, white)
@@ -46,6 +66,7 @@ def game_over_display(score):
 
   pygame.display.update()  
 
+# Function to print scores from the session
 def print_scores():
     print("Scores from this session:")
     for score in all_scores:
@@ -88,7 +109,6 @@ def game_loop():
             if event.type == pygame.QUIT:
                 game_over = True
             if event.type == pygame.KEYDOWN: 
-                # Updated comment to reflect added movement controls
                 if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT or \
                    event.key == pygame.K_UP or event.key == pygame.K_DOWN: 
                     if (event.key == pygame.K_LEFT and x1_change != snake_block) or \
