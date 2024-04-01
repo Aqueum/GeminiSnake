@@ -50,9 +50,9 @@ def generate_new_food_position(snake_list, screen_width, screen_height):
            break
     return foodx, foody
 
-def game_over_display():  
+def game_over_display(score):  
   font_style = pygame.font.SysFont(None, 50)  # Larger font 
-  message = font_style.render("Game Over! Final Score: " + str(snake_length - 1), True, white)
+  message = font_style.render("Game Over! Final Score: " + str(score), True, white)
   screen.blit(message, [screen_width / 6, screen_height / 3])
   pygame.display.update()  
 
@@ -75,7 +75,7 @@ def game_loop():
     while True: # Game now runs indefinitely
         
         while game_close:  # Game over display loop
-            game_over_display()
+            game_over_display(snake_length - 1)  # Pass the score
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     game_over = True
@@ -104,7 +104,7 @@ def game_loop():
         y1 += y1_change
 
         collision, food_eaten = check_collision(snake_list, foodx, foody, screen_width, screen_height)
-        if collision:  # Only end the game on wall collisions
+        if collision:  
             if not food_eaten: 
                 game_over = True
                 game_close = True  
