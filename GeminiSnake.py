@@ -32,15 +32,23 @@ def display_score(score):
     screen.blit(value, [0, 0])
 
 def check_collision(snake_list, foodx, foody, screen_width, screen_height):
-  head = snake_list[-1]  
-  if head[0] >= screen_width or head[0] < 0 or head[1] >= screen_height or head[1] < 0:
-    return True
-  for segment in snake_list[:-1]: 
-    if head == segment:
-      return True
-  if head[0] == foodx and head[1] == foody:
-    return True
-  return False
+    head = snake_list[-1]  
+    if head[0] >= screen_width or head[0] < 0 or head[1] >= screen_height or head[1] < 0:
+        return True, False  # Collision with wall, no food
+    for segment in snake_list[:-1]: 
+        if head == segment:
+            return True, False  # Collision with self, no food
+    if head[0] == foodx and head[1] == foody:
+        return True, True  # Collision with food
+    return False, False  # No collision
+
+def generate_new_food_position(snake_list, screen_width, screen_height):
+    while True:  
+        foodx = round(random.randrange(0, screen_width - snake_block) / 10.0) * 10.0
+        foody = round(random.randrange(0, screen_height - snake_block) / 10.0) * 10.0
+        if (foodx, foody) not in snake_list:  
+           break
+    return foodx, foody
 
 def game_over_display():  
   message = font_style.render("Game Over! Press R to restart or Q to quit", True, white)
@@ -61,38 +69,61 @@ def game_loop():
     snake_length = 1
     snake_list.append((x1, y1)) 
 
-    foodx = round(random.randrange(0, screen_width - snake_block) / 10.0) * 10.0
-    foody = round(random.randrange(0, screen_height - snake_block) / 10.0) * 10.0
+    foodx, foody = generate_new_food_position(snake_list, screen_width, screen_height)
 
     while not game_over:
 
         while game_close:
             game_over_display()
             for event in pygame.event.get():
-                # ... (Handle restart or quit logic) 
+                if event.type == pygame.QUIT:
+                    game_over = True
+                    game_close = False  
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_q:
+                        game_over = True
+                        game_close = False
+                    if event.key == pygame.K_r:
+                        game_loop()  # Restart the game
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game_over = True
             if event.type == pygame.KEYDOWN: 
-                # ... (Handle arrow key presses for movement)
+                if (event.key == pygame.K_LEFT and x1_change != snake_block) or \
+                   (event.key == pygame.K_RIGHT and x1_change != -snake_block): 
+                    x1_change = -snake_block if event.key == pygame.K_LEFT else snake_block
+                    y1_change = 0 
+                elif (event.key == pygame.K_UP and y1_change != snake_block) or \
+                     (event.key == pygame.K_DOWN and y1_change != -snake_block):
+                    y1_change = -snake_block if event.key == pygame.K_UP else snake_block 
+                    x1_change = 0 
 
         x1 += x1_change
-        y1_change = 0 # Temporary fix, will refine later.
+        y1 += y1_change
 
-        if check_collision(snake_list, foodx, foody, screen_width, screen_height):
+        collision, food_eaten = check_collision(snake_list, foodx, foody, screen_width, screen_height)
+        if collision:
             game_over = True
             game_close = True
 
-        y1 += y1_change
-
+        if food_eaten:
+            snake_length += 1
+            foodx, foody = generate_new_food_position(snake_list, screen_width, screen_height)
+        
         screen.fill(black)
+
+        # Update snake position (move the body)
+        new_head = (x1, y1)
+        snake_list.append(new_head)
+        if len(snake_list) > snake_length:
+            del snake_list[0]  # Remove the tail if the snake is not growing
 
         for x, y in snake_list:
             pygame.draw.rect(screen, green, [x, y, snake_block, snake_block])
 
         pygame.draw.rect(screen, red, [foodx, foody, snake_block, snake_block])
-        display_score(snake_length - 1)
+        display_score(snake_length - 1) 
         pygame.display.update()
 
         clock.tick(snake_speed)
