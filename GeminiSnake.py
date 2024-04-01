@@ -57,7 +57,16 @@ def game_loop():
     game_over = False
     game_close = False
 
-    # ... (Initialization of x1, y1,  x1_change, y1_change, snake_list, foodx, foody - remains the same)
+    # Initialize variables inside the game_loop 
+    x1 = screen_width / 2
+    y1 = screen_height / 2
+    x1_change = 0
+    y1_change = 0
+    snake_list = []
+    snake_length = 1
+    snake_list.append((x1, y1)) 
+
+    foodx, foody = generate_new_food_position(snake_list, screen_width, screen_height)
 
     while True: # Game now runs indefinitely
         
