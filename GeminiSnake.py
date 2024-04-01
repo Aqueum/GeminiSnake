@@ -39,73 +39,40 @@ def check_collision(snake_list, foodx, foody, screen_width, screen_height):
         if head == segment:
             return True, False  # Collision with self, no food
     if head[0] == foodx and head[1] == foody:
-        return True, True  # Collision with food
-    return False, False  # No collision
+        return False, True  # No Collision, food eaten
+    return False, False  # No collision, no food
 
 def generate_new_food_position(snake_list, screen_width, screen_height):
-    while True:  
-        foodx = round(random.randrange(0, screen_width - snake_block) / 10.0) * 10.0
-        foody = round(random.randrange(0, screen_height - snake_block) / 10.0) * 10.0
-        if (foodx, foody) not in snake_list:  
-           break
-    return foodx, foody
+    # ... (Existing function code)
 
 def game_over_display():  
-  message = font_style.render("Game Over! Press R to restart or Q to quit", True, white)
+  font_style = pygame.font.SysFont(None, 50)  # Larger font 
+  message = font_style.render("Game Over! Final Score: " + str(snake_length - 1), True, white)
   screen.blit(message, [screen_width / 6, screen_height / 3])
   pygame.display.update()  
 
 # Main game loop
 def game_loop():
-    print("Starting game loop")
-    game_over = False
-    game_close = False
+    # ... (Initialization: x1, y1, x1_change, y1_change, snake_list, foodx, foody)
 
-    x1 = screen_width / 2
-    y1 = screen_height / 2
-    x1_change = 0
-    y1_change = 0
-    snake_list = []
-    snake_length = 1
-    snake_list.append((x1, y1)) 
-
-    foodx, foody = generate_new_food_position(snake_list, screen_width, screen_height)
-
-    while not game_over:
-
-        while game_close:
+    while True: # Game now runs indefinitely
+        
+        while game_close:  # Game over display loop
             game_over_display()
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    game_over = True
-                    game_close = False  
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_q:
-                        game_over = True
-                        game_close = False
-                    if event.key == pygame.K_r:
-                        game_loop()  # Restart the game
+                # ... (Handle restart or quit logic)
 
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                game_over = True
-            if event.type == pygame.KEYDOWN: 
-                if (event.key == pygame.K_LEFT and x1_change != snake_block) or \
-                   (event.key == pygame.K_RIGHT and x1_change != -snake_block): 
-                    x1_change = -snake_block if event.key == pygame.K_LEFT else snake_block
-                    y1_change = 0 
-                elif (event.key == pygame.K_UP and y1_change != snake_block) or \
-                     (event.key == pygame.K_DOWN and y1_change != -snake_block):
-                    y1_change = -snake_block if event.key == pygame.K_UP else snake_block 
-                    x1_change = 0 
+            # ... (Handle movement controls)
 
         x1 += x1_change
         y1 += y1_change
 
         collision, food_eaten = check_collision(snake_list, foodx, foody, screen_width, screen_height)
-        if collision:
-            game_over = True
-            game_close = True
+        if collision:  # Only end the game on wall collisions
+            if not food_eaten: 
+                game_over = True
+                game_close = True  
 
         if food_eaten:
             snake_length += 1
